@@ -1,0 +1,245 @@
+//code for mit ocw 
+
+//binary search 
+//return i where arr[i] > k if i<n, or i=n when k > arr[n-1]
+function bs(a,b,k){
+	if (a>b) return a;
+	var m = Math.floor((a+b)/2);
+	if (k<arr[m]) return bs(a,m-1,k);
+	else if (k>=arr[m]) return bs(m+1,b,k);
+	return m;
+}
+----------------
+//binary insertion sort
+
+function is(){
+    for(var i=1;i<arr.length;++i){
+        var k=bs(0,i-1,arr[i]);
+        if (k!=i){
+            var m=arr[i];
+            for(var j=i-1;j>=k;--j)arr[j+1]=arr[j];
+            arr[k]=m;
+         }
+    }
+    return arr;
+}
+-------------------------------
+//recursive merge sort
+function ms(a,b){
+    if (a==b) return;
+    var m= Math.floor((a+b+1)/2);
+    ms(a,m-1);
+    ms(m,b);
+    merge(a,m,b);
+}
+
+function merge(a,m,b){
+    var t=[];
+    for(var i=a,j=m,k=0;i<=m-1 && j<=b;){
+        t[k++] = arr[i]<=arr[j] ? arr[i++] : arr[j++];
+    }
+    for(;i<=m-1;++i) t[k++]=arr[i];
+    for(;j<=b;++j) t[k++]=arr[j];
+    for(var p=0;p<k;++p) arr[a+p]=t[p];
+}
+----------------------------
+//merge sort iterative
+function ms1(){
+    for(var i=1; i<=Math.ceil(arr.length/2);++i){
+        for(var j=0;j<arr.length;j+=2*i){
+            var a=j,b=Math.min(a+i-1, arr.length-1);
+            var c=j+i, d=Math.min(c+i-1, arr.length-1);
+            var t=[];
+            for(var k=0;a<=b && c<=d;) t[k++] = arr[a]<=arr[c] ? arr[a++] : arr[c++];
+            for(; a<=b;++a)t[k++]=arr[a];
+            for(; c<=d;++c)t[k++]=arr[c];
+            for(var p=0;p<k;++p)arr[j+p]=t[p];
+        }
+    }
+    return arr;
+}
+========================
+//heap starts from index 1
+function maxHeapify(i){
+	if ( i > Math.floor((arr.length-1)/2) ) return;
+	var l= 2*i, r=l+1;
+	var m = l;
+	if ( r <= arr.length-1 && arr[r] > arr[l]) m=r;
+	if (arr[i]<arr[m]){
+		var t=arr[i];arr[i]=arr[m];arr[m]=t;
+		maxHeapify(m);
+	}
+}
+---------------------
+function buildhHeap(){
+	for(var i=Math.floor((arr.length-1)/2);i>=1;--i){
+		maxHeapify(i);
+	}
+}
+---------------
+function heapSort(){
+    swap(arr[1], arr[ arr.length])
+}
+size of node, pre/successor of node
+===================
+//bst
+//g++  7.4.0
+
+#include <iostream>
+#include <vector>
+#include<cstdlib>
+
+using namespace std;
+class BSTNode{
+    public:
+        int value;
+        BSTNode *left,*right;
+    BSTNode(int v=0):value(v),left(0),right(0){}
+};
+class BST{
+    public:
+    BSTNode * root;
+    BST():root(0){}
+    void insert(int v){
+        if (!root){
+            root=new BSTNode(v); 
+        }
+        else{
+            BSTNode *p = 0;
+            this->insertHelper(v, &p,root);
+        }
+    }
+    void insertHelper(int v, BSTNode **p, BSTNode *n){
+        if (!n) *p = new BSTNode(v);
+        else if (v <= n->value) insertHelper(v, &n->left, n->left);
+        else insertHelper(v, &n->right, n->right);
+    }
+    BSTNode* find(int v,BSTNode ***p){
+        if (!root) return 0;
+        
+        return findHelper(v,p,root);
+    }
+    BSTNode *findHelper(int v, BSTNode ***p, BSTNode *n){
+        if (n){
+            if ( v == n->value) return n;
+            if ( v <= n->value) {*p=&n->left;return findHelper(v,p, n->left);}
+            if ( v > n->value) {*p=&n->right;return findHelper(v,p, n->right);}
+        }
+        return n;
+    }
+    
+    void print(){
+        if (!root)cout<<"tree is empty";
+        else print_inorder(root);
+        cout<<endl;
+    }
+    void print2(){
+        if (!root)cout<<"tree is empty";
+        else print_preorder(root);
+        cout<<endl;
+    }
+    void print_inorder(BSTNode *n){
+        if (n->left) print_inorder(n->left);
+        cout<<n->value<<" ";
+        if (n->right) print_inorder(n->right);
+    }
+    void print_preorder(BSTNode *n){
+        cout<<n->value<<" ["<<(n->left ? n->left->value : 0)<<", "<<(n->right ? n->right->value : 0)<<" ]\n";
+        if (n->left) print_preorder(n->left);
+        if (n->right) print_preorder(n->right);
+    }
+    void deleteNode(int v){
+        BSTNode **p=0;
+        BSTNode *n = find(v, &p);
+        if (n){
+            cout<<"found "<<n->value<<" ["<<n->left<<","<<n->right<<"]"<<endl;
+            if (!n->left && !n->right){
+                if (p) *p=0;
+                else root=0;
+                delete n;
+            }
+            else if (n->left && !n->right){
+                if (p) *p=n->left;
+                else root=n->left;
+                delete n;
+            }
+            else if (!n->left && n->right){
+                if (p) *p=n->right;
+                else root=n->right;
+                delete n;
+            }
+            else{
+                BSTNode *pt = n;
+                BSTNode *t=getRightMostChild(n->left, &pt);
+                n->value = t->value;
+                if (pt->left == t) pt->left = t->left;
+                else pt->right = t->left;
+                delete t;
+            }
+        }
+        else cout<<"not found";
+    }
+    BSTNode *getRightMostChild(BSTNode *n, BSTNode **p=0){
+        if (n->right){
+            *p = n;
+            return getRightMostChild(n->right, p);
+        }
+        return n;
+    }
+};
+
+typedef vector<int> vi;
+void testDeleteNode(vi data, int value, string desc){
+    cout<<"-------- "<<desc<<" ------------\n";
+    BST tree;
+    for(int i=0; i<data.size();++i) tree.insert(data[i]);
+    tree.print2();
+    tree.deleteNode(value);
+    tree.print2();
+}
+int main()
+{
+    //leaft node
+    /*
+    testDeleteNode((vector<int>{15,5,34}),5, "leaf node is left child");
+    testDeleteNode((vector<int>{15,5,34}),34, "leaf node is right child");
+    testDeleteNode((vector<int>{15}),15, "leaf node is root");
+   
+    //has one-child
+    testDeleteNode((vector<int>{15,5,34,2}),5, "n is left child and has only left child");
+    testDeleteNode((vector<int>{15,5,34,30}),34, "n is right child and has only left child");
+    testDeleteNode((vector<int>{15,5,10}),5, "n is left child and has only right child");
+    testDeleteNode((vector<int>{15,5,34,40}),34, "n is right child and has only right child");
+    testDeleteNode((vector<int>{15,5,2,7}),15,"root has only left child");
+    testDeleteNode((vector<int>{15,34,30,40}),15, "root has only right child");
+    */
+    //has both child
+    testDeleteNode((vector<int>{15,7,22,4,3, 12}),7, "binary node n, n->left node is right-tree-less");
+    testDeleteNode((vector<int>{15,7,22,4,3,5,12,11,10,14}),7, "binary node n, right most node is at depth 1 of n->left");
+    testDeleteNode((vector<int>{15,11,22,4,3,6,5,8,7,10,9,13,12,14}),11, "binary node n, right most node is at depth 3 of n->left");
+
+    return 0;
+    BST tree;
+    //srand(time(0));
+    //for(int i=0;i<10;++i) tree.insert(rand()%50+1);
+    int arr[]={54,23,145,100,21};
+    for(int i=0;i<5;++i) tree.insert(arr[i]);
+    tree.print2();
+    tree.deleteNode(145);
+    tree.print2();
+    
+    tree.deleteNode(23);
+    tree.print2();
+    
+    tree.deleteNode(21);
+    tree.deleteNode(100);
+    //tree.deleteNode(54);
+    tree.print2();
+    
+    return 0;
+    
+    BSTNode **p=0;
+    BSTNode *n = tree.find(145, &p);
+    if (n) cout<<"found "<<n->value<<endl;
+    if (p) cout<<"found p "<<(*p)->value<<endl;
+}
