@@ -87,9 +87,18 @@ size of node, pre/successor of node
 
 #include <iostream>
 #include <vector>
+#include <map>
+#include <algorithm>
 #include<cstdlib>
 
 using namespace std;
+
+typedef vector<int> vi;
+typedef pair<int,int> PairInt;
+typedef pair<int, PairInt> PairNode;
+typedef map<int, PairInt> MapN2C;
+typedef vector<PairNode> VecNode;
+
 class BSTNode{
     public:
         int value;
@@ -138,6 +147,10 @@ class BST{
         else print_preorder(root);
         cout<<endl;
     }
+    void print2(MapN2C &mp){
+        if (!root) return;
+        else print_preorder(root, mp);
+    }
     void print_inorder(BSTNode *n){
         if (n->left) print_inorder(n->left);
         cout<<n->value<<" ";
@@ -145,6 +158,12 @@ class BST{
     }
     void print_preorder(BSTNode *n){
         cout<<n->value<<" ["<<(n->left ? n->left->value : 0)<<", "<<(n->right ? n->right->value : 0)<<" ]\n";
+        if (n->left) print_preorder(n->left);
+        if (n->right) print_preorder(n->right);
+    }
+    void print_preorder(BSTNode *n, MapN2C &mp){
+        //cout<<n->value<<" ["<<(n->left ? n->left->value : 0)<<", "<<(n->right ? n->right->value : 0)<<" ]\n";
+        mp[n->value] = PairInt(n->left ? n->left->value : 0, n->right ? n->right->value : 0);
         if (n->left) print_preorder(n->left);
         if (n->right) print_preorder(n->right);
     }
@@ -187,21 +206,31 @@ class BST{
         return n;
     }
 };
-
-typedef vector<int> vi;
-void testDeleteNode(vi data, int value, string desc){
+//expected is a map where each item is a node (v -> pair(lcv,rcv)).
+void testDeleteNode(vi data, int value, const MapN2C &expected, string desc){
     cout<<"-------- "<<desc<<" ------------\n";
     BST tree;
-    for(int i=0; i<data.size();++i) tree.insert(data[i]);
+    for(unsigned int i=0; i<data.size();++i) tree.insert(data[i]);
     tree.print2();
     tree.deleteNode(value);
-    tree.print2();
+    MapN2C mp;
+    tree.print2(mp);
+    cout<<desc<<" = " <<(mp==expected)<<endl;
+}
+//vn is a vector where each item is a pair(v, pair(lcv, rch)). 
+//output is a map where each item is a node (v -> pair(lcv,rcv)).
+//going to do vec 2 map conversion b/c I want to use initializer list to write expected value for testDeleteNode().
+MapN2C v2map(VecNode &&vn){
+    MapN2C mp;
+    copy(vn.begin(),vn.end(),inserter(mp, mp.begin()));
+    return mp;
 }
 int main()
 {
     //leaft node
+    
+    testDeleteNode((vector<int>{15,5,34}),5, v2map(VecNode {{15,PairInt(0,34)}}),"leaf node is left child");
     /*
-    testDeleteNode((vector<int>{15,5,34}),5, "leaf node is left child");
     testDeleteNode((vector<int>{15,5,34}),34, "leaf node is right child");
     testDeleteNode((vector<int>{15}),15, "leaf node is root");
    
@@ -212,12 +241,12 @@ int main()
     testDeleteNode((vector<int>{15,5,34,40}),34, "n is right child and has only right child");
     testDeleteNode((vector<int>{15,5,2,7}),15,"root has only left child");
     testDeleteNode((vector<int>{15,34,30,40}),15, "root has only right child");
-    */
+    
     //has both child
     testDeleteNode((vector<int>{15,7,22,4,3, 12}),7, "binary node n, n->left node is right-tree-less");
     testDeleteNode((vector<int>{15,7,22,4,3,5,12,11,10,14}),7, "binary node n, right most node is at depth 1 of n->left");
     testDeleteNode((vector<int>{15,11,22,4,3,6,5,8,7,10,9,13,12,14}),11, "binary node n, right most node is at depth 3 of n->left");
-
+    */
     return 0;
     BST tree;
     //srand(time(0));
@@ -242,4 +271,38 @@ int main()
     BSTNode *n = tree.find(145, &p);
     if (n) cout<<"found "<<n->value<<endl;
     if (p) cout<<"found p "<<(*p)->value<<endl;
+}
+
+
+//==========================
+//test code for proof of concept of writing tree as a map
+//==========================
+#include <iostream>
+#include<map>
+#include<vector>
+#include<algorithm>
+using namespace std;
+
+typedef pair<int,int> PairInt;
+typedef pair<int, PairInt> PairNode;
+typedef map<int, PairInt> MapN2C;
+
+typedef vector<PairNode> VecNode;
+
+void print(VecNode vn){
+    for(auto a: vn) cout<<a.first<<" -> ("<<a.second.first<<", "<<a.second.second<<")\n";
+}
+MapN2C v2map(VecNode &vn){
+    MapN2C mp;
+    copy(vn.begin(),vn.end(),inserter(mp, mp.begin()));
+    return mp;
+}
+
+int main()
+{
+    print(VecNode {{1,PairInt(5,7)}});
+    
+    MapN2C mp;
+    MapN2C mp;
+    for(auto a: mp) cout<<a.first<<" -> ("<<a.second.first<<", "<<a.second.second<<")\n";
 }
