@@ -244,7 +244,7 @@ int main()
     //has both child
     testDeleteNode((vector<int>{15,7,22,4,3, 12}),7, v2map(VecNode { {15,PairInt(4,22)}, {4,PairInt(3,12)}, {3,PairInt(0,0)}, {12,PairInt(0,0)}, {22,PairInt(0,0)} }), "binary node n, n->left node is right-tree-less");
     testDeleteNode((vector<int>{15,7,22,4,3,5,12,11,10,14}),7, v2map(VecNode { {15,PairInt(5,22)}, {5,PairInt(4,12)}, {4,PairInt(3,0)}, {3,PairInt(0,0)}, {12,PairInt(11,14)}, {11,PairInt(10,0)}, {10,PairInt(0,0)}, {14,PairInt(0,0)}, {22,PairInt(0,0)} }),"binary node n, right most node is at depth 1 of n->left");
-    testDeleteNode((vector<int>{15,11,22,4,3,6,5,8,7,10,9,13,12,14}),11, "binary node n, right most node is at depth 3 of n->left");
+    testDeleteNode((vector<int>{15,11,22,4,3,6,5,8,7,10,9,13,12,14}),11, v2map(VecNode { {15,PairInt(19,22)}, {10,PairInt(4,13)}, {4,PairInt(3,6)}, {3,PairInt(0,0)}, {6,PairInt(5,8)}, {5,PairInt(0,0)}, {8,PairInt(7,9)}, {7,PairInt(0,0)}, {9,PairInt(0,0)}, {13,PairInt(12,14)}, {12,PairInt(0,0)}, {14,PairInt(0,0)}, {22,PairInt(0,0)} }), "binary node n, right most node is at depth 3 of n->left");
     
     return 0;
     BST tree;
