@@ -179,6 +179,15 @@ int main()
     testAVL(vector<int>{30,20,40,10,25,5}, v2map(VecNode{ {20,PairInt(10,30)}, {10,PairInt(5,0)}, {5,PairInt(0,0)}, {30,PairInt(25,40)}, {25,PairInt(0,0)}, {40,PairInt(0,0)} }), "LL, root, new parent (20) had right child (25)");
     testAVL(vector<int>{30,20,40,10,25,22}, v2map(VecNode{ {25,PairInt(20,30)}, {20,PairInt(10,22)}, {10,PairInt(0,0)}, {22,PairInt(0,0)}, {30,PairInt(0,40)}, {40,PairInt(0,0)} }), "LR, root, new parent (25) had left child (22)");
     testAVL(vector<int>{30,20,40,10,25,28}, v2map(VecNode{ {25,PairInt(20,30)}, {20,PairInt(10,0)}, {10,PairInt(0,0)}, {30,PairInt(28,40)}, {28,PairInt(0,0)}, {40,PairInt(0,0)} }), "LR, root, new parent (25) had right child (28)");
-    //RR
+    //RR,RL,RL
     testAVL(vector<int>{20,10,30,25,40,50}, v2map(VecNode{ {30,PairInt(20,40)}, {20,PairInt(10,25)}, {10,PairInt(0,0)}, {25,PairInt(0,0)}, {40,PairInt(0,50)}, {50,PairInt(0,0)} }), "RR, root, new parent (30) had left child (25)");
+    testAVL(vector<int>{20,10,30,25,40,22}, v2map(VecNode{ {25,PairInt(20,30)}, {20,PairInt(10,22)}, {10,PairInt(0,0)}, {22,PairInt(0,0)}, {30,PairInt(0,40)}, {40,PairInt(0,0)} }), "RL, root, new parent (25) had left child (22)");
+    testAVL(vector<int>{20,10,30,25,40,28}, v2map(VecNode{ {25,PairInt(20,30)}, {20,PairInt(10,0)}, {10,PairInt(0,0)}, {30,PairInt(28,40)}, {28,PairInt(0,0)}, {40,PairInt(0,0)} }), "RL, root, new parent (25) had left child (28)");
+    //non-root
+    testAVL(vector<int>{50,30,60,20,40,70,10,25,5}, v2map(VecNode{ {50,PairInt(20,60)}, {20,PairInt(10,30)}, {10,PairInt(5,0)}, {5,PairInt(0,0)}, {30,PairInt(25,40)}, {25,PairInt(0,0)}, {40,PairInt(0,0)}, {60,PairInt(0,70)}, {70,PairInt(0,0)} }), "LL, non-root, new parent (20) had right child (25)");
+    testAVL(vector<int>{50,30,60,20,40,70,10,25,28}, v2map(VecNode{ {50,PairInt(25,60)}, {25,PairInt(20,30)}, {20,PairInt(10,0)}, {10,PairInt(0,0)}, {30,PairInt(28,40)}, {28,PairInt(0,0)}, {40,PairInt(0,0)}, {60,PairInt(0,70)}, {70,PairInt(0,0)} }), "LR, non-root, new parent (25) had left child (28)");
+    testAVL(vector<int>{50,30,70,20,60,80,75,90,95}, v2map(VecNode{ {50,PairInt(30,80)}, {30,PairInt(20,0)}, {20,PairInt(0,0)}, {80,PairInt(70,90)}, {70,PairInt(60,75)}, {60,PairInt(0,0)}, {75,PairInt(0,0)}, {90,PairInt(0,95)}, {95,PairInt(0,0)} }), "RR, non-root, parent (80) had right child (95)");
+    testAVL(vector<int>{50,30,70,20,60,80,75,90,72}, v2map(VecNode{ {50,PairInt(30,75)}, {30,PairInt(20,0)}, {20,PairInt(0,0)}, {75,PairInt(70,80)}, {70,PairInt(60,72)}, {60,PairInt(0,0)}, {72,PairInt(0,0)}, {80,PairInt(0,90)}, {90,PairInt(0,0)} }), "RL, non-root, parent (75) had left child (72)");
+    //mix-multile rotations
+    testAVL(vector<int>{75,50,25/*LL*/,40,30,35/*LR*/,90/*RR*/,45,60,65/*RL*/}, v2map(VecNode{ {40,PairInt(30,60)}, {30,PairInt(20,35)}, {20,PairInt(0,0)}, {35,PairInt(0,0)}, {60,PairInt(50,75)}, {50,PairInt(45,0)}, {45,PairInt(0,0)}, {75,PairInt(65,90)}, {65,PairInt(0,0)}, {90,PairInt(0,0)} }), "mix - all 4 rotations");
 }
